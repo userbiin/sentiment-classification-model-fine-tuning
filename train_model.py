@@ -15,8 +15,8 @@ print(model.config.id2label)   # 라벨 맵 확인용
 id2label = model.config.id2label
 label2id = model.config.label2id
 
-trainset = pd.read_csv("/Dataset/train.csv") 
-testset = pd.read_csv("/Dataset/valid.csv")  
+trainset = pd.read_csv("Dataset/train.csv") 
+testset = pd.read_csv("Dataset/valid.csv")  
 
 # 라벨 문자열을 id로 변환 (예: "joy" → 3)
 trainset["label_id"] = trainset["label"].map(label2id)
@@ -56,8 +56,8 @@ class EmotionDataset(Dataset):
 trainloader = EmotionDataset(trainset, tokenizer)
 testloader = EmotionDataset(testset, tokenizer)
 
-trainloader = DataLoader(trainloader, batch_size=16, shuffle=True)
-validloader = DataLoader(testloader, batch_size=32, shuffle=False)
+trainloader = DataLoader(trainloader, batch_size=4, shuffle=True) # batch_size = 16 -> 4
+validloader = DataLoader(testloader, batch_size=8, shuffle=False) # batch_size = 32 -> 8
 
 # 4. 옵티마이저/스케줄러 
 optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
