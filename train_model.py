@@ -15,14 +15,12 @@ print(model.config.id2label)   # 라벨 맵 확인용
 id2label = model.config.id2label
 label2id = model.config.label2id
 
-# 2. 데이터셋 준비 (예: train.csv: text, label 컬럼)
-train_df = pd.read_csv("train_emotion.csv")   # text, label
-valid_df = pd.read_csv("valid_emotion.csv")   # 선택
+trainset = pd.read_csv("/Dataset/train.csv") 
+testset = pd.read_csv("/Dataset/valid.csv")  
 
-# 라벨 문자열을 id로 변환
-# 예: "joy" → 3
-train_df["label_id"] = train_df["label"].map(label2id)
-valid_df["label_id"] = valid_df["label"].map(label2id)
+# 라벨 문자열을 id로 변환 (예: "joy" → 3)
+trainset["label_id"] = trainset["label"].map(label2id)
+testset["label_id"] = testset["label"].map(label2id)
 
 
 class EmotionDataset(Dataset):
@@ -55,13 +53,13 @@ class EmotionDataset(Dataset):
         return item
 
 # 3. DataLoader
-train_dataset = EmotionDataset(train_df, tokenizer)
-valid_dataset = EmotionDataset(valid_df, tokenizer)
+trainloader = EmotionDataset(trainset, tokenizer)
+testloader = EmotionDataset(testset, tokenizer)
 
-trainloader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-validloader = DataLoader(valid_dataset, batch_size=32, shuffle=False)
+trainloader = DataLoader(trainloader, batch_size=16, shuffle=True)
+validloader = DataLoader(testloader, batch_size=32, shuffle=False)
 
-# 4. 옵티마이저/스케줄러 (CIFAR에서 쓰던 감각 그대로)
+# 4. 옵티마이저/스케줄러 
 optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
 
@@ -110,5 +108,5 @@ for epoch in range(epochs):
     print(f"[Epoch {epoch+1}] train_loss={avg_train_loss:.4f}, valid_acc={acc:.4f}")
 
 # 6. 저장
-model.save_pretrained("./finetuned_emotion_model")
-tokenizer.save_pretrained("./finetuned_emotion_model")
+model.save_pretrained("./finetuned_model_1202")
+tokenizer.save_pretrained("./finetuned_model_1202")
